@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEST | Task 2 Essay Assignment</title>
+    <style>
+        :root {
+            --primary: #dc2626; /* Blood red */
+            --primary-hover: #b91c1c;
+            --success: #10b981; /* Green for success */
+            --bg-dark: #121212; 
+            --bg-card: #1e1e1e;
+            --bg-input: #262626;
+            --text-main: #f5f5f5;
+            --text-muted: #a3a3a3;
+            --border-color: #3f3f46;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Login Screen --- */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #262626 0%, #121212 100%);
+            z-index: 10;
+        }
+
+        .login-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .code-art {
+            font-family: monospace;
+            color: var(--text-main);
+            white-space: pre;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(220, 38, 38, 0.5);
+        }
+
+        .login-form {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+            width: 320px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background: #52525b;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* --- Main Assignment Interface --- */
+        #assignment-screen {
+            display: none;
+            width: 100%;
+            max-width: 1600px;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-info span {
+            margin-right: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .timer {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-main);
+            background: var(--bg-input);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timer.warning {
+            color: var(--primary);
+            border-color: var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .prompt-panel, .writing-panel {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .prompt-panel {
+            border-right: 1px solid var(--border-color);
+            background: #171717;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prompt-hero-img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            object-fit: cover;
+            max-height: 240px;
+        }
+
+        .essay-prompt-box {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .writing-panel {
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            flex: 1;
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-size: 1.05rem;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .editor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .word-counter {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .word-counter.target-met {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        h2 {
+            color: var(--text-main);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* --- Results Summary --- */
+        #results-summary {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin: 0.5rem 0;
+            font-family: monospace;
+        }
+
+        .tier-message {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-title {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #sync-status {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <img src="NEST Icon (1).png" alt="NEST Logo" class="login-logo">
+        <div class="code-art">
+███╗   ██╗███████╗███████╗████████╗
+████╗  ██║██╔════╝██╔════╝╚══██╔══╝
+██╔██╗ ██║█████╗  ███████╗   ██║   
+██║╚██╗██║██╔══╝  ╚════██║   ██║   
+██║ ╚████║███████╗███████║   ██║   
+╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝
+        </div>
+        <div class="login-form">
+            <div class="input-group">
+                <label>Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter your full name" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>Class Code</label>
+                <input type="text" id="classCode" placeholder="e.g., N04A, N05C" required autocomplete="off">
+            </div>
+            <button onclick="startTest()">Commence Essay Task</button>
+        </div>
+    </div>
+
+    <!-- Main Assignment Screen -->
+    <div id="assignment-screen">
+        <div class="header">
+            <div class="student-info">
+                <span id="display-name">Student: </span>
+                <span id="display-class">Class: </span>
+            </div>
+            <div class="timer" id="timer">25:00</div>
+        </div>
+        
+        <div class="workspace">
+            <!-- Left Panel: Visualization Art & Prompt -->
+            <div class="prompt-panel">
+                <img src="birdart.png" alt="NEST Study Visualization Art" class="prompt-hero-img">
+                <h2>IELTS Task 2: Opinion Essay</h2>
+                
+                <div class="essay-prompt-box">
+                    <p style="margin-top: 0; color: var(--text-main); font-weight: 600;">You should spend about 25 minutes on this task.</p>
+                    <p style="color: #d4d4d8; margin-bottom: 0;">
+                        Some people think that students should spend more time learning practical skills at school, such as cooking or budgeting. Others believe that academic subjects should remain the priority. 
+                    </p>
+                    <p style="color: var(--primary); font-weight: bold; margin-bottom: 0; margin-top: 1rem;">
+                        Discuss both views and give your own opinion.
+                    </p>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 0.95rem;">
+                    <strong>Instructions:</strong> Write your response in the editor. Aim for between <strong>150 and 250 words</strong>. Support your arguments with clear reasons and relevant examples from your own knowledge or experience.
+                </p>
+            </div>
+
+            <!-- Right Panel: Writing Editor -->
+            <div class="writing-panel">
+                <h2 style="margin-bottom: 1rem;">Your Response</h2>
+                
+                <textarea id="essay-input" placeholder="Type your essay here..." oninput="updateWordCount()"></textarea>
+
+                <div class="editor-footer">
+                    <div class="word-counter" id="word-count-display">Words: 0 / Target: 150-250</div>
+                    <button id="submitBtn" onclick="submitEssay()" style="width: auto; padding: 0.75rem 2rem;">Submit Essay</button>
+                </div>
+
+                <!-- Results Summary Inline -->
+                <div id="results-summary">
+                    <div class="tier-title" id="tier-title">Submission Status</div>
+                    <div class="score-display"><span id="final-words" style="color: var(--primary);">0</span> Words</div>
+                    <div class="tier-message" id="tier-message">Processing submission...</div>
+                    <span id="sync-status">Syncing results to database...</span>
+                    <br>
+                    <button onclick="location.reload()" style="background: transparent; border: 1px solid var(--text-muted); color: var(--text-main); margin-top: 1rem; width: auto; padding: 0.75rem 2rem;">Return to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ASSIGNMENT_NAME = "NEST: Task 2 Essay - Practical vs Academic Skills";
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxL7UqB79-fNZmL1Dskt5wOVgaur4qcYuyQvWosRVCWEFBg-clReIKD6BzGzf4cJkbz/exec';
+
+        let timeLeft = 25 * 60; // 25 minutes
+        let timerInterval;
+
+        function startTest() {
+            const name = document.getElementById('studentName').value.trim();
+            const code = document.getElementById('classCode').value.trim();
+
+            if (!name || !code) {
+                alert("Student Name and Class Code are required before commencing the task.");
+                return;
+            }
+
+            document.getElementById('display-name').innerText = `Student: ${name}`;
+            document.getElementById('display-class').innerText = `Class: ${code}`;
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('assignment-screen').style.display = 'flex';
+
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitEssay();
+                return;
+            }
+
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerDisplay = document.getElementById('timer');
+            
+            timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 120) { // Warning at 2 minutes remaining
+                timerDisplay.classList.add('warning');
+            }
+        }
+
+        function countWords(str) {
+            return str.trim() === '' ? 0 : str.trim().split(/\s+/).length;
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('essay-input').value;
+            const count = countWords(text);
+            const counterEl = document.getElementById('word-count-display');
+            
+            counterEl.innerText = `Words: ${count} / Target: 150-250`;
+
+            if (count >= 150 && count <= 250) {
+                counterEl.classList.add('target-met');
+            } else {
+                counterEl.classList.remove('target-met');
+            }
+        }
+
+        function submitEssay() {
+            clearInterval(timerInterval);
+            
+            const name = document.getElementById('studentName').value.trim() || "Anonymous (Timeout)";
+            const studentClass = document.getElementById('classCode').value.trim() || "Unknown";
+            const essayText = document.getElementById('essay-input').value;
+            const wordCount = countWords(essayText);
+            
+            const textarea = document.getElementById('essay-input');
+            const submitBtn = document.getElementById('submitBtn');
+            textarea.disabled = true;
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+
+            // Display Results Summary
+            document.getElementById('final-words').innerText = wordCount;
+            const titleDisplay = document.getElementById('tier-title');
+            const messageDisplay = document.getElementById('tier-message');
+            const scoreColor = document.getElementById('final-words');
+
+            if (wordCount >= 150 && wordCount <= 250) {
+                titleDisplay.innerText = "Target Achieved";
+                titleDisplay.style.color = "var(--success)";
+                scoreColor.style.color = "var(--success)";
+                messageDisplay.innerText = "Great job! Your essay is within the requested word count range.";
+            } else if (wordCount > 250) {
+                titleDisplay.innerText = "Word Count Exceeded";
+                titleDisplay.style.color = "#f59e0b"; // Orange
+                scoreColor.style.color = "#f59e0b";
+                messageDisplay.innerText = "Your essay is well-developed but exceeds the 250-word upper limit.";
+            } else {
+                titleDisplay.innerText = "Below Word Count";
+                titleDisplay.style.color = "var(--primary)";
+                scoreColor.style.color = "var(--primary)";
+                messageDisplay.innerText = "Your essay is under 150 words. Be sure to expand your arguments next time.";
+            }
+
+            document.getElementById('results-summary').style.display = 'block';
+            submitBtn.style.display = 'none';
+
+            // Scroll to results summary
+            setTimeout(() => {
+                document.getElementById('results-summary').scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 300);
+
+            // Send the entire essay text to Google Sheets instead of just the word count
+            sendDataToSheets(name, studentClass, essayText, wordCount);
+        }
+
+        function sendDataToSheets(studentName, classCode, essayText, wordCount) {
+            const statusText = document.getElementById('sync-status');
+            
+            const submission = new URLSearchParams();
+            submission.set("assignmentName", ASSIGNMENT_NAME);
+            submission.set("assignment", ASSIGNMENT_NAME);
+            submission.set("name", studentName);
+            submission.set("studentClass", classCode);
+            submission.set("score", essayText); // Full paragraph text sent to score column
+            submission.set("total", `${wordCount} words`);
+
+            fetch(`${GOOGLE_SCRIPT_URL}?${submission.toString()}`, {
+                method: "GET",
+                mode: "no-cors",
+                cache: "no-store"
+            })
+            .then(() => {
+                statusText.innerText = "Essay successfully synced to NEST database.";
+                statusText.style.color = "var(--success)";
+            })
+            .catch(error => {
+                console.error('Data transmission failed:', error);
+                statusText.innerText = "Network Error: Could not sync results. Please screenshot your work.";
+                statusText.style.color = "var(--primary)";
+            });
+        }
+    </script>
+</body>
+</html>
